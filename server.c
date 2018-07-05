@@ -69,10 +69,7 @@ void* threadFunc(void* thread_data)
 	{
 		pthread_mutex_lock(&mutex);
 
-		while (UploadQueueLength < 1 && ServerUp)
-		{
-			pthread_cond_wait(&condition, &mutex);
-		}
+		while (UploadQueueLength < 1 && ServerUp) pthread_cond_wait(&condition, &mutex);
 
 		if (!tmp)
 		{
@@ -230,15 +227,13 @@ int main(int argc, char* argv[])
 					SendMessage(sock, "File exist");
 					shutdown(sock, SHUT_RDWR);
 					close(sock);
+					free(filename);
 					continue;
 				}
 
 				SendMessage(sock, "OK");
 				error = AddFile(sock, filename);
-				if (!error)
-				{
-					printf("Accepted %s\n", filename);
-				}
+				if (!error) printf("Accepted %s\n", filename);
 				else
 				{
 					SendMessage(sock, "Can't process file");
